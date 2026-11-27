@@ -91,6 +91,55 @@ New agents start with **Local scripts off**. You can either:
 - turn Local scripts on for each one in the app, to direct it from MCP, or
 - leave it off and go through the Manager: `send_message("Manager", "Give this to Reviewer: ...")`
 
+### Agents that know your project
+
+`create_agent` writes the profile from what your MCP client knows **right now**. Load the project first,
+then ask for the agent in the same session:
+
+1. **Load context.** Ask the client to read your project: `llms.txt`, docs, README, roadmap. For example:
+   *"Read https://www.mevlabs.xyz/llms.txt and every page it links to."*
+2. **Ask for the agent.** *"Create an agent for <role> that thinks from this project's point of view."*
+   The client can now use real product names, constraints and priorities instead of a generic persona.
+3. **Copy the facts into the profile.** The new agent cannot see your client's session:
+   - `how`: the source-of-truth URL (so it can re-read it), plus a 2–3 line summary of the project.
+   - `antiJobs`: the project's hard rules, written as things it never does.
+   - `how`: a fixed answer format, e.g. *decision → why → tasks (owner, done when) → what I need from you*.
+4. **Preview, then create.** Run `dryRun: true`, read the description, adjust, then `dryRun: false`.
+5. **Check with the first task.** Use an `initialMessage` such as *"Read <source> and list the 3 things
+   that matter most right now."* A vague or wrong answer means the profile is missing context.
+
+Example: an integration-support agent for [MEV Labs](https://www.mevlabs.xyz/llms.txt), made after
+the client read its `llms.txt`:
+
+```text
+create_agent(
+  manager: "Manager",
+  name: "Integrator", title: "Partner integration support",
+  job: "Answers a partner's integration question with the exact endpoint, request and error code
+        from the MEV Protect docs.",
+  antiJobs: [
+    "Never promises a launch date, rebate rate or partner terms; they are agreed per partner",
+    "Never asks for or handles private keys or seed phrases",
+    "Never guesses an endpoint or field that is not in the docs; says it is not documented"
+  ],
+  how: [
+    "Source of truth: https://www.mevlabs.xyz/llms.txt, mainly /docs/*.md",
+    "Wallets → RPC https://rpc.mevlabs.xyz/<chain>/<key> (key is an identifier, not a secret);
+     backends → API https://api.mevlabs.xyz/v1/<chain> with a Bearer key kept on the server",
+    "Chain ids: bsc, arbitrum, base, robinhood, arc, elysium; revert protection on bsc only",
+    "Answer as: the call (curl or JSON) → what comes back → the error codes to handle"
+  ],
+  voice: "Precise and brief; code first, one line of explanation",
+  wake: "on-demand",
+  initialMessage: "Read llms.txt and the docs, then show how a DEX backend submits a transaction on Base and reads its status.",
+  dryRun: true
+)
+```
+
+Every line in `antiJobs` and `how` comes from the site, not from the role name: the URLs, the chain
+ids, "the RPC key is not a secret" and "rebate terms are per partner" are what make it this project's
+support agent instead of a generic one.
+
 ## Install
 
 ```sh
