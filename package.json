@@ -1,0 +1,36 @@
+{
+  "name": "openbot-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for managing OpenBot agents via the Local scripts API",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "test": "npm run build && tsx test/smoke.ts",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/index.js",
+    "mock": "tsx test/run-mock.ts"
+  },
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.11",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  },
+  "bin": {
+    "openbot-mcp": "dist/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "mevlabs-xyz",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mevlabs-xyz/openbot-mcp.git"
+  }
+}
