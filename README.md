@@ -142,14 +142,25 @@ support agent instead of a generic one.
 
 ## Install
 
+Run straight from GitHub, no clone needed (npm fetches the repo and builds it):
+
 ```sh
+npx -y github:mevlabs-xyz/openbot-mcp
+```
+
+Or clone it. `npm install` also builds `dist/` (via the `prepare` script):
+
+```sh
+git clone https://github.com/mevlabs-xyz/openbot-mcp.git
+cd openbot-mcp
 npm install
-npm run build
 ```
 
 ### Claude Code
 
 ```sh
+claude mcp add openbot --scope user -- npx -y github:mevlabs-xyz/openbot-mcp
+# or, from a clone:
 claude mcp add openbot --scope user -- node "/path/to/openbot-mcp/dist/index.js"
 ```
 
@@ -159,12 +170,14 @@ claude mcp add openbot --scope user -- node "/path/to/openbot-mcp/dist/index.js"
 {
   "mcpServers": {
     "openbot": {
-      "command": "node",
-      "args": ["/path/to/openbot-mcp/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "github:mevlabs-xyz/openbot-mcp"]
     }
   }
 }
 ```
+
+From a clone, use `"command": "node"` with `"args": ["/path/to/openbot-mcp/dist/index.js"]` instead.
 
 On Windows, use a full path such as `C:\\path\\to\\openbot-mcp\\dist\\index.js` (escape backslashes in JSON).
 
